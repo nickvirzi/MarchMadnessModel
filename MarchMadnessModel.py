@@ -37,7 +37,7 @@ class Team:
 
         print(self.teamRank, self.teamConference)
 
-    def getESPNTeamInfo(self):
+    def getToESPNTeamInfo(self):
         driver.find_element_by_xpath('//*[@id="global-search-trigger"]').click()
         driver.find_element_by_xpath('//*[@id="global-search"]/input[1]').send_keys(self.name)
         driver.find_element_by_xpath('//*[@id="global-search"]/input[2]').click()
@@ -69,14 +69,30 @@ class Team:
 
         driver.find_element_by_xpath(elementXPATH).click()
 
+        window_after = driver.window_handles[0]
+        driver.switch_to.window(window_after)
+
+    def getTeamScheduleData(self):
+        driver.find_element_by_xpath('//*[@id="global-nav-secondary"]/div[2]/ul/li[3]/a').click()
+
+        for tableRow in driver.find_elements_by_xpath('//*[@id="fittPageContainer"]/div[2]/div[5]/div/div[1]/section/div/section/section/div/div/div/div[2]/table//tr'): 
+            data = [item.text for item in tableRow.find_elements_by_xpath(".//*[self::td]")]
+            print(data)
+
 teamOne = Team(teamOneName)
 teamTwo = Team(teamTwoName)
 
-teamOne.getTeamDataInfo()
-teamTwo.getTeamDataInfo()
+#teamOne.getTeamDataInfo()
+#teamTwo.getTeamDataInfo()
 
 goToESPN()
-teamOne.getESPNTeamInfo()
+
+teamOne.getToESPNTeamInfo()
+teamOne.getTeamScheduleData()
+
+goToESPN()
+
+teamTwo.getToESPNTeamInfo()
 
 #TODO Integrate the KENPON team to ESPN schedule to check if teams played eachother
 #TODO potentially lower number of table rows searched
