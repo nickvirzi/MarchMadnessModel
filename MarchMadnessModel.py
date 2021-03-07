@@ -72,29 +72,47 @@ class Team:
         window_after = driver.window_handles[0]
         driver.switch_to.window(window_after)
 
-    def getTeamScheduleData(self):
+    def getTeamScheduleData(self, opponentName):
+
+        self.rankedOpponentsStats = []
+        self.lossesStats = []
+
         driver.find_element_by_xpath('//*[@id="global-nav-secondary"]/div[2]/ul/li[3]/a').click()
 
         for tableRow in driver.find_elements_by_xpath('//*[@id="fittPageContainer"]/div[2]/div[5]/div/div[1]/section/div/section/section/div/div/div/div[2]/table//tr'): 
             data = [item.text for item in tableRow.find_elements_by_xpath(".//*[self::td]")]
-            print(data)
+            
+            if len(data) > 3:
+                #Find Ranked Results 
+                for char in data[1]:
+                    if char.isdigit():
+                        self.rankedOpponentsStats.append(data)
+                        break
+
+                #Finds Losses
+                if data[2][0] == 'L':
+                    self.lossesStats.append(data)
+
+                #Check if played opponent
+                if opponentName in data[1]:
+                    self.hasPlayedOpponent = True
+                    self.playedOpponentStats = data
+                else:
+                    self.hasPlayedOpponent = False
 
 teamOne = Team(teamOneName)
 teamTwo = Team(teamTwoName)
 
-#teamOne.getTeamDataInfo()
-#teamTwo.getTeamDataInfo()
+teamOne.getTeamDataInfo()
+teamTwo.getTeamDataInfo()
 
 goToESPN()
 
 teamOne.getToESPNTeamInfo()
-teamOne.getTeamScheduleData()
+teamOne.getTeamScheduleData(teamTwo.name)
 
 goToESPN()
 
 teamTwo.getToESPNTeamInfo()
 
-#TODO Integrate the KENPON team to ESPN schedule to check if teams played eachother
-#TODO potentially lower number of table rows searched
-#TODO wins and losses against ranked teams and potentially largest win margin and loss margin
-#TODO Check if teams have played eachother
+#TODO ESPN cannot find if they played each other unless name is exactly case sensitive typed
