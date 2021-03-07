@@ -63,3 +63,8 @@ teamOne.getTeamDataInfo()
 teamTwo.getTeamDataInfo()
 
 getESPNTeamInfo()
+
+#TODO Integrate the KENPON team to ESPN schedule to check if teams played eachother
+#TODO potentially lower number of table rows searched
+#TODO wins and losses against ranked teams and potentially largest win margin and loss margin
+#TODO Check if teams have played eachother
