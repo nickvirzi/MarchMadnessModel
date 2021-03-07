@@ -116,3 +116,4 @@ goToESPN()
 teamTwo.getToESPNTeamInfo()
 
 #TODO ESPN cannot find if they played each other unless name is exactly case sensitive typed
+#TODO Display all stats
