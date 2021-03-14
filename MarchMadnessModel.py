@@ -35,8 +35,6 @@ class Team:
                 self.teamDefensiveRating = data[8]
                 self.strengthOfScheduleRating = data[14]
 
-        print(self.teamRank, self.teamConference)
-
     def getToESPNTeamInfo(self):
         driver.find_element_by_xpath('//*[@id="global-search-trigger"]').click()
         driver.find_element_by_xpath('//*[@id="global-search"]/input[1]').send_keys(self.name)
@@ -73,9 +71,12 @@ class Team:
         driver.switch_to.window(window_after)
 
     def getTeamScheduleData(self, opponentName):
-
         self.rankedOpponentsStats = []
         self.lossesStats = []
+        self.hasPlayedRankedOpponent = False
+        self.hasLoss = False
+
+        self.opponentName = opponentName
 
         driver.find_element_by_xpath('//*[@id="global-nav-secondary"]/div[2]/ul/li[3]/a').click()
 
@@ -87,11 +88,13 @@ class Team:
                 for char in data[1]:
                     if char.isdigit():
                         self.rankedOpponentsStats.append(data)
+                        self.hasPlayedRankedOpponent = True
                         break
 
                 #Finds Losses
                 if data[2][0] == 'L':
                     self.lossesStats.append(data)
+                    self.hasLoss = True
 
                 #Check if played opponent
                 if opponentName in data[1]:
@@ -100,20 +103,63 @@ class Team:
                 else:
                     self.hasPlayedOpponent = False
 
+    def displayTeamData(self):
+        #Display kenpom data
+        print(' ')
+
+        print(self.name + ' is in the ' + self.teamConference + 'and has a record of ' + self.teamRecord)
+        print(self.name + ' is ranked ' + self.teamRank + ' on knepom.')
+        print(self.name + ' has an OFF EFF of ' + self.teamOffensiveEfficiency + ' which ranks ' + self.teamOffensiveRating)
+        print(self.name + ' has an DEF EFF of ' + self.teamDefensiveEfficiency + ' which ranks ' + self.teamDefensiveRating)
+        print(self.name + ' has a strength of schedule rating of ' + self.strengthOfScheduleRating)
+
+        print(' ')
+
+        #Display ESPN data
+        print(' ')
+
+        if self.hasPlayedRankedOpponent == True:
+            print(self.name + ' has played ranked teams, here are the stats:')
+            for x in self.rankedOpponentsStats:
+                print(x)
+
+        print(' ')
+
+        if self.hasLoss == True:
+            print(self.name + ' has losses, here are the stats:')
+            for x in self.lossesStats:
+                print(x)
+
+        print(' ')
+
+        if self.hasPlayedOpponent == True:
+            print(self.name + 'has played ' + self.opponentName + ' here are the stats:')
+            print(self.playedOpponentStats)
+
+        print(' ')
+
+#Initialize Teams
 teamOne = Team(teamOneName)
 teamTwo = Team(teamTwoName)
 
+#Get team knepom data
 teamOne.getTeamDataInfo()
 teamTwo.getTeamDataInfo()
 
 goToESPN()
 
+#Get team one ESPN data
 teamOne.getToESPNTeamInfo()
 teamOne.getTeamScheduleData(teamTwo.name)
 
 goToESPN()
 
+#Get team two ESPN data
 teamTwo.getToESPNTeamInfo()
+teamTwo.getTeamScheduleData(teamOne.name)
+
+#Display team data
+teamOne.displayTeamData()
+teamTwo.displayTeamData()
 
 #TODO ESPN cannot find if they played each other unless name is exactly case sensitive typed
-#TODO Display all stats
